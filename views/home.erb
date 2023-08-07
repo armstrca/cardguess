@@ -1,0 +1,34 @@
+<%= deal %>
+<p><p><h1>
+<%= @dealer_deck[0] %>
+</h1>
+
+
+<p>
+  <h1>Dealer Deck</h1>
+  <div id="card_display"><%= @current_card %></div>
+  <button id="next_card_button"><a href="/next_card">Next Card</a></button>
+</p>
+
+
+
+
+
+
+<h2>
+  <% @clubs_array.each do |card| %>
+    <dd><%= card %></dd>
+  <% end %>
+<p>
+  <% @spades_array.each do |card| %>
+    <dd><%= card %></dd>
+  <% end %>
+<p>
+    <% @hearts_array.each do |card| %>
+    <dd><%= card %></dd>
+  <% end %>
+<p>
+    <% @diamonds_array.each do |card| %>
+    <dd><%= card %></dd>
+  <% end %>
+</h2>
