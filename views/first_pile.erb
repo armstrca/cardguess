@@ -1,4 +1,3 @@
-<h1>
 <%= @pile1 %>
 <br>
 <%= @pile2 %>
@@ -15,11 +14,9 @@
   <br>
 </h1>
 
-</h1>
-
-
 <p>
-  <button id="next_card_button" name="updated_piles">
-  <a href="/second_pile">Next Card</a>
-  </button>
+<form action="/second_pile" method="post">
+  <input type="submit" name="piles_for_cookie" value="Next Card">
+</form>
+
 </p>

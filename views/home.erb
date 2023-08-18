@@ -1,5 +1,4 @@
 <h1>
-<br>
 Welcome to Card Guess.
 <br>
 
@@ -8,7 +7,13 @@ Welcome to Card Guess.
 
 
 <p>
-  <button id="next_card_button"><a href="/first_pile">Deal first card</a></button>
+<form action="/first_pile" method="post">
+<input type="submit" name="piles_for_cookie" value="Deal First Card">
+</p>
+
+<p>
+<form action="/next_card" method="post">
+<input type="submit" name="piles_for_cookie" value="TEST BUTTON">
 </p>
 
 <p>
