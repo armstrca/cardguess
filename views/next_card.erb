@@ -1,17 +1,29 @@
 <h1>
-<%= @piles[0] %>
+<%= @pile1 %>
 <br>
-<%= @piles[1] %>
+<%= @pile2 %>
 <br>
-<%= @piles[2] %>
+<%= @pile3 %>
 <br>
-<%= @piles[3] %>
+<%= @pile4 %>
 <br>
-
-<%= full_pile_deal(@piles, @current_card_indices) %>
+<%= @piles[0].length %>
+<h1>
+  Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br>
+  Pile 2: <%= @pile2.empty? ? "No card" : @pile2.first %><br>
+  Pile 3: <%= @pile3.empty? ? "No card" : @pile3.first %><br>
+  Pile 4: <%= @pile4.empty? ? "No card" : @pile4.first %><br>
+  <%= "Game over!" if ((@pile1.length == 1) && (@pile2.length == 1) && (@pile3.length == 1) && (@pile4.length == 1)) %><br>
 </h1>
 
+</h1>
+
+
 <p>
-  <h1>Dealer Deck</h1>
-  <button id="next_card_button"><a href="/next_card">Next Card</a></button>
+  <button id="next_card_button">
+  <a href="/next_card">Next Card</a>
+  </button>
+</p>
+<p>
+  <button id="next_card_button"><a href="/">Home</a></button>
 </p>
