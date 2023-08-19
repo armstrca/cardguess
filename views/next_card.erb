@@ -1,29 +1,46 @@
-<%= @pile1 %>
-<br>
+<!-- <%= @pile1 %>
+<br><br>
 <%= @pile2 %>
-<br>
+<br><br>
 <%= @pile3 %>
-<br>
+<br><br>
 <%= @pile4 %>
-<br>
-<%= @piles[0].length %>
+<br><br> -->
+
+
 <h1>
+<% if (session[:cookiepile1].length > 0) && (session[:cookiepile2].length == 0) && (session[:cookiepile3].length == 0) && (session[:cookiepile4].length == 0) %>
+  Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br><br><br><br>
+  <% end %>
+
+<% if (session[:cookiepile1].length > 0) && (session[:cookiepile2].length > 0) && (session[:cookiepile3].length == 0) && (session[:cookiepile4].length == 0) %>
+  Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br>
+  Pile 2: <%= @pile2.empty? ? "No card" : @pile2.first %><br><br><br>
+  <% end %>
+
+<% if (session[:cookiepile1].length > 0) && (session[:cookiepile2].length > 0) && (session[:cookiepile3].length > 0) && (session[:cookiepile4].length == 0) %>
+  Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br>
+  Pile 2: <%= @pile2.empty? ? "No card" : @pile2.first %><br>
+  Pile 3: <%= @pile3.empty? ? "No card" : @pile3.first %><br><br>
+  <% end %>
+
+<% if (session[:cookiepile1].length > 0) && (session[:cookiepile2].length > 0) && (session[:cookiepile3].length > 0) && (session[:cookiepile4].length > 0) %>
   Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br>
   Pile 2: <%= @pile2.empty? ? "No card" : @pile2.first %><br>
   Pile 3: <%= @pile3.empty? ? "No card" : @pile3.first %><br>
   Pile 4: <%= @pile4.empty? ? "No card" : @pile4.first %><br>
-  <%= "Game over!" if ((@pile1.length == 1) && (@pile2.length == 1) && (@pile3.length == 1) && (@pile4.length == 1)) %><br>
+  <% end %>
+  
+  <%= "Game over!" if ((@pile1.length == 1) && (@pile2.length == 1) && (@pile3.length == 1) && (@pile4.length == 1)) %>
 </h1>
-
-</h1>
-
 
 <p>
 <form action="/next_card" method="post">
   <input type="submit" name="piles_for_cookie" value="Next Card">
 </form>
 </p>
-
 <p>
-  <button id="home button"><a href="/">Home</a></button>
+<form action="/new_deck" method="post">
+  <input type="submit"  name="new_deck_shuffle" value="Build New Deck">
+</form>
 </p>

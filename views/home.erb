@@ -1,25 +1,17 @@
 <h1>
 Welcome to Card Guess.
-<br>
-
 </h1>
-
-
-
 <p>
-<form action="/first_pile" method="post">
-<input type="submit" name="piles_for_cookie" value="Deal First Card">
-</p>
 
 <p>
 <form action="/next_card" method="post">
-<input type="submit" name="piles_for_cookie" value="TEST BUTTON">
+  <input type="submit" name="next_card" value="Deal First Card">
+</form>
 </p>
 
 <p>
-  <button id="next_card_button"><a href="/new_deck">Build New Deck</a></button>
+<form action="/new_deck" method="post">
+  <input type="submit"  name="new_deck_shuffle" value="Build New Deck">
+</form>
 </p>
 
-<p>
-  <button id="next_card_button"><a href="/">Home</a></button>
-</p>

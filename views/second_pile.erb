@@ -7,6 +7,7 @@
 <%= @pile4 %>
 <br>
 
+
 <h1>
   Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br>
   Pile 2: <%= @pile2.empty? ? "No card" : @pile2.first %><br>
@@ -21,5 +22,14 @@
 <form action="/third_pile" method="post">
   <input type="submit" name="piles_for_cookie" value="Next Card">
 </form>
-
+</p>
+<p>
+<form action="/" method="get">
+  <button>Home</button>
+</form>
+</p>
+<p>
+<form action="/new_deck" method="post">
+  <input type="submit"  name="new_deck_shuffle" value="Build New Deck">
+</form>
 </p>
