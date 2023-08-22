@@ -74,17 +74,19 @@ end
 
 def player_turn_conditional
   if $players_step_index == 0
-    "You are Player #{$players_step_index + 1}. Take your turn."
+    "You are Player #{$players_step_index + 1}, #{$decided_characters[0][1]}. Take your turn."
   elsif $players_step_index == 1
-    "You are Player #{$players_step_index + 1}. Take your turn."
+    "You are Player #{$players_step_index + 1}, #{$decided_characters[1][1]}. Take your turn."
   elsif $players_step_index == 2
-    "You are Player #{$players_step_index + 1}. Take your turn."
+    "You are Player #{$players_step_index + 1}, #{$decided_characters[2][1]}. Take your turn."
   elsif $players_step_index == 3
-    "You are Player #{$players_step_index + 1}. Take your turn."
+    "You are Player #{$players_step_index + 1}, #{$decided_characters[3][1]}. Take your turn."
   elsif $players_step_index == 4
-    "You are Player #{$players_step_index + 1}. Take your turn."
+    "You are Player #{$players_step_index + 1}, #{$decided_characters[4][1]}. Take your turn."
   end
 end
+
+player_turn_conditional
 
 def format_guess_prompt
     @current_guess = "{ Player #{$players_step_index + 1} => player#{$players_step_index + 1}_guess }"
@@ -115,9 +117,9 @@ $characters = {
 }
 
 $step1_characters = $characters.to_a.shuffle
-pp $decided_characters = $step1_characters[0..4].to_s
+pp $decided_characters = $step1_characters[0..4]
 $current_step_index = 0
-
+$players_step_index = 0
 
 
 post("/new_deck") do
@@ -134,7 +136,7 @@ post("/new_deck") do
   $suits_all = ["♣︎", "♠︎", "♥︎", "♦︎"]
 
   $step1_characters = $characters.to_a.shuffle
-  pp $decided_characters = $step1_characters[0..4].to_s
+  pp $decided_characters = $step1_characters[0..4]
 
   @deck_hash = {}
 
@@ -191,7 +193,6 @@ post("/next_card") do
   $dealer_deck
   $players_step_index += 0
   $players_step_index %= 5
-
   @piles = session[:piles] || distribute_to_piles($dealer_deck)
   @pile1 = @piles[0]
   @pile2 = @piles[1]
@@ -203,11 +204,11 @@ post("/next_card") do
 
     Here are the rules:/n/n
 
-    1. There is one dealer, and 5 players. You are not the dealer. You are each of the 5 players. DO NOT NARRATE THE GAME AS A DEALER. DO NOT SPEAK AS IF YOU ARE A GAME SHOW HOST. ONLY INTERACT WITH THE GAME AS A PLAYER WITH WHATEVER PERSONALITY IS ASSIGNED TO THAT PLAYER./n/n
+    1. There is one dealer, and 5 players. You are not the dealer. DO NOT NARRATE THE GAME AS A DEALER. DO NOT SPEAK AS IF YOU ARE A GAME SHOW HOST. ONLY INTERACT WITH THE GAME AS A PLAYER WITH WHATEVER PERSONALITY IS ASSIGNED TO THAT PLAYER./n/n
 
     2. The game is played with standard playing cards - an indeterminate amount greater than one deck (52 cards plus two jokers) but smaller than 4 total decks. This way card counting is not really possible. The list of all possible valid cards is represented by this array: #{$deck_array}./n/n
 
-    3. Players take turns guessing what the next card dealt will be, based on the 'player styles/personalities' I will list for you later. When the game is initiated, chatGPT will assign each of its players one of the player styles/personalities from that list, and each player will maintain that player style/personality for the entirety of the game./n/n
+    3. Players take turns guessing what the next card dealt will be, based on the personality traits that their names/titles/origins allude to. When the game is initiated, each player will maintain that player style/personality for the entirety of the game./n/n
 
     4. After each guess, the dealer places the next card down. The first four cards dealt are placed side by side from left to right. Every card after that is placed on top of a previous card, so card 5 would be on top of card 1, card 8 on top of card 4, etc.. The first card pile is #{session[:cookiepile1]}, the second card pile is #{session[:cookiepile2]}, the third card pile is #{session[:cookiepile3]}, and the fourth card pile is #{session[:cookiepile3]}. Each player is trying to correctly guess what the next string added to their corresponding pile array will be. Because there are 4 piles and 5 players, each player will be guessing the next card for a different pile each turn (i.e., Player 1's first turn will be for pile 1, their second turn will be for pile 2, Player 5's first turn will be for pile 1, Player 3's second turn will be for pile 4, Player 3's third turn will be for pile 1, etc.). ChatGPT will keep track of which player's turn it is by using player_turn_conditional./n/n
 
@@ -217,31 +218,19 @@ post("/next_card") do
 
     7. At the beginning of each POST action invoking chatGPT, chatGPT will generate a 'card guess' from one of the five 'players' it represents BEFORE the card is revealed. The 'card guess' will consist of two parts: the first part, named @player_guess, is a single string value from '$deck_array': #{$deck_array}. The second part is that 'player character's' 'reasoning' for their guess, which will be called @player_reasoning. AFTER the next card has been revealed, that player will respond to the result. If the result did not score the player a point, their response will be no longer than one sentence long. If it did score the player a response, their response can be any length./n/n
 
-    8. This game in and of itself is not automatically fun. Thus, participants are expected to improvise and provide reasoning, serious/fatuous/silly/heartbreaking or otherwise, for why they are not 'guessing' but in fact are quite certain of what the next card will be./n/n
+    8. Participants are expected to improvise and provide reasoning, serious/fatuous/silly/heartbreaking or otherwise, for why they are not 'guessing' but in fact are quite certain of what the next card will be./n/n
 
     9. Each of the players may choose to take what other players have said and guessed into account. They may also take into account the contents of #{session[:cookiepile1]}, #{session[:cookiepile2]}, #{session[:cookiepile3]}, and #{session[:cookiepile4]} when making guesses and providing reasoning for them. But this is not mandatory./n/n
 
-    10. DO NOT DESCRIBE HOW THE GAME WORKS. DO NOT DESCRIBE ASSIGNING PERSONALITIES TO THE PLAYERS. THE PLAYER'S PERSONALITY SHOULD ONLY BE APPARENT THROUGH THEIR BEHAVIOR, NOT THROUGH EXPLICIT THIRD-PERSON OR SECOND-PERSON DESCRIPTIONS OF THEM. DO NOT LABEL THE PLAYER IN ANY WAY OTHER THAN PLAYER 1, 2, 3, 4, OR 5. DO NOT EVER TYPE OUT THE TEXT OF THEIR PERSONALITY TYPE. THEIR PERSONALITY AND IDENTITY SHOULD BE REVEALED IMPLICITLY RATHER THAN EXPLICITLY. NEVER PUT THEIR PERSONALITY TITLE IN ANY OF THE MESSAGES YOU SEND./n/n
+    10. DO NOT DESCRIBE HOW THE GAME WORKS. DO NOT DESCRIBE ASSIGNING PERSONALITIES TO THE PLAYERS. THE PLAYER'S PERSONALITY SHOULD ONLY BE APPARENT THROUGH THEIR BEHAVIOR, NOT THROUGH EXPLICIT THIRD-PERSON OR SECOND-PERSON DESCRIPTIONS OF THEM. DO NOT LABEL THE PLAYER IN ANY WAY. DO NOT EVER TYPE OUT THE TEXT OF THEIR PERSONALITY. THEIR PERSONALITY AND IDENTITY SHOULD BE REVEALED IMPLICITLY RATHER THAN EXPLICITLY. NEVER PUT THEIR PERSONALITY TITLE IN ANY OF THE MESSAGES YOU SEND./n/n
 
     11. ChatGPT format/structure all of its responses as follows in order for this program to properly interpret its input: /n
-    You must first send one separate message in the format of a hash: { Player #{$players_step_index + 1} => Player##{$players_step_index + 1}_guess }, where player represents whichever of the 5 players is currently guessing, and player_guess is a value taken from the '$deck_array' specified above in Rule 7./n
-    You must then send another separate message, again in the format of a hash: { Player #{$players_step_index + 1} => player#{$players_step_index + 1}_reasoning }, where player still represents whichever of the 5 players is currently guessing, and player_reasoning is a string in which the player may choose to explain their guess or not, depending on their personality, and following the other rules and guidelines set out in these rules/instructions. Do not alter the titles of any of these keys at all./n
-    Once the player has submitted a guess and a card has been dealt, you must send a third message, again in the format of a hash: { Player #{$players_step_index + 1} => player##{$players_step_index + 1}_response }, where player still represents whichever of the 5 players just guessed, and 'player#{$players_step_index + 1}_response' is a narrative string in which the player character responds to the result. Do not alter the titles of any of these keys at all./n/n
-    In other words:/n
-      def format_guess_prompt
-        @current_guess = '{ Player #{$players_step_index + 1} => player#{$players_step_index + 1}_guess }'
-        @current_reasoning = '{ Player #{$players_step_index + 1} => player#{$players_step_index + 1}_reasoning }'
-      end
-
-    def format_response_prompt
-      @player_response = '{ Player #{$players_step_index + 1} => player#{$players_step_index + 1}_response }'
-    end/n/n
-
-    12. Here is the list of player styles/personalities: #{$decided_characters}"
+    You must first send one separate message in the format of a hash: { Player #{$players_step_index + 1} => player#{$players_step_index + 1}_guess }, where 'Player' represents whichever of the 5 players is currently guessing, and 'player_guess' is a value taken from the '$deck_array' specified above in Rule 7./n
+    You must then send another separate message, again in the format of a hash: { Player #{$players_step_index + 1} => player#{$players_step_index + 1}_reasoning }, where 'Player' still represents whichever of the 5 players is currently guessing, and 'player_reasoning' is a string in which the player may choose to explain their guess or not, depending on their personality, and following the other rules and guidelines set out in these rules/instructions. Alter only the values of these hashes, not their keys./n
+    Once the player has submitted a guess and a card has been dealt, you must send a third message, again in the format of a hash: { Player #{$players_step_index + 1} => player#{$players_step_index + 1}_response }, where 'Player' still represents whichever of the 5 players just guessed, and 'player#{$players_step_index + 1}_response' is a narrative string in which the player character responds to the result. Alter only the values of these hashes, not their keys."
 
 
-
-
+#############################################################
 
 
 
@@ -265,7 +254,7 @@ post("/next_card") do
     request_messages = [
       {
         "role" => "system",
-        "content" => $decided_characters
+        "content" => "Player 1 is #{$decided_characters[0]}. Player 2 is #{$decided_characters[1]}. Player 3 is #{$decided_characters[2]}. Player 4 is #{$decided_characters[3]}. Player 5 is #{$decided_characters[4]}."
       },
       {
         "role" => "system",
@@ -339,6 +328,9 @@ post("/next_card") do
       pp @game_history << { "role" => "assistant", "content" => @reply }
 
       cookies[:game_history] = JSON.generate(@game_history)
+
+
+###############################################################
 
   if ((session[:current_step_index_cookie].length) == 1)
     session[:cookiepile1] += [@pile1.first]
