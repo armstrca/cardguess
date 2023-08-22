@@ -5,6 +5,7 @@ require "sinatra/activerecord"
 require "http"
 require "json"
 require "dotenv"
+require 'dotenv/load'
 require "sinatra/cookies"
 require "better_errors"
 require 'rack/session/cookie'
@@ -243,7 +244,7 @@ post("/next_card") do
     $state_of_play = [session[:cookiepile1], session[:cookiepile2], session[:cookiepile3], session[:cookiepile4], session[:current_step_index_cookie], cookies[:game_history], session[:players_step_index_cookie]]
 
     request_headers_hash = {
-        "Authorization" => "Bearer #{ENV.fetch("OPENAI_API_KEY")}",
+        "Authorization" => "Bearer #{OPENAI_API_KEY}",
         "content-type" => "application/json"
       }
 

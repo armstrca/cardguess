@@ -10,6 +10,7 @@ gem "http"
 gem "openai"
 gem 'rack_session_access'
 
+
 # Use Puma as the app server
 gem "puma", "~> 5.0"
 
