@@ -44,3 +44,29 @@
   <input type="submit"  name="new_deck_shuffle" value="Build New Deck">
 </form>
 </p>
+
+
+<% if @game_history != nil %>
+<!-- Loops through each hash in the @chat_history array-->
+  <% @game_history.each do |chat| %>
+<!-- Sequentially labels, prints and maintains each user input from each hash in the @chat_history cookie array -->
+<!-- Sequentially labels, prints and maintains each ChatGPT response from each hash in the @chat_history cookie array. Also formats for intended line breaks. -->
+
+  <% if chat["role"] == "assistant" && ($players_step_index == 1)%>
+    <dt>Player 1:</dt>
+    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
+<% elsif chat["role"] == "assistant" && ($players_step_index == 2)%>
+    <dt>Player 2:</dt>
+    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
+<% elsif chat["role"] == "assistant" && ($players_step_index == 3)%>
+    <dt>Player 3:</dt>
+    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
+<% elsif chat["role"] == "assistant" && ($players_step_index == 4)%>
+    <dt>Player 4:</dt>
+    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
+<% elsif chat["role"] == "assistant" && ($players_step_index == 0)%>
+    <dt>Player 5:</dt>
+    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
+    <% end %>
+  <% end %>
+<% end %>
