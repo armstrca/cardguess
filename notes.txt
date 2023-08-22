@@ -1,0 +1,47 @@
+
+
+
+TO-DO:
+
+Adjust display of ChatGPT responses to always show the most recent guess/response of each player. 
+
+Figure out how to make sure that ChatGPT *always* returns a properly formatted/hashed response in the parameters I described. Right now it's hit or miss.
+
+Construct a point-tallying system - this would be dependent on those hashes and my program being able to check if the most recent dealt card matches the array value ChatGPT inputs. Right now, ChatGPT's responses are not consistent in their formatting, so I can't tell my program where to find its guess for comparison to the dealt card.
+
+Figure out how to make ChatGPT *always* process the card dealt after a player guesses, and have that player respond before moving to the next turn.
+
+Ideally I'd like for the player characters to never include their titles in any of their responses. Maybe add their titles to an array and use something like an .includes? method to ban those terms from their vocabulary???
+
+Have a visible deck counter maybe for the player - something like:
+"The deck has (([$dealer_deck].length) - (session[:current_step_index_cookie].length) cards left."
+
+
+
+
+
+
+
+
+
+
+
+
+
+DONE:
+Maybe create a player_step_index counter to specify exactly which player should be taking a turn at any given point. Then create a conditional within next_card and/or probably the API request stuff.
+
+
+Send a separate message that only tells chatGPT the characters. No response desired.
+
+
+Send a separate message that only tells chatGPT the $state_of_play. No response desired.
+
+
+Send a separate message that only tells chatGPT the rules. No response desired.
+
+
+Send a separate message that only prompts chatGPT for a given player's guess and reasoning. Yes response desired.
+
+
+Send a separate message that only prompts chatGPT for a given player's response to a revealed card. Yes response desired.

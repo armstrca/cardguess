@@ -71,7 +71,6 @@ OPENAI_API_KEY = ENV.fetch("OPENAI_API_KEY")
   erb(:home)
 end
 
-
 def player_turn_conditional
   if $players_step_index == 0
     "You are Player #{$players_step_index + 1}, #{$decided_characters[0][1]}. Take your turn."
@@ -85,8 +84,6 @@ def player_turn_conditional
     "You are Player #{$players_step_index + 1}, #{$decided_characters[4][1]}. Take your turn."
   end
 end
-
-player_turn_conditional
 
 def format_guess_prompt
     @current_guess = "{ Player #{$players_step_index + 1} => player#{$players_step_index + 1}_guess }"
@@ -120,7 +117,6 @@ $step1_characters = $characters.to_a.shuffle
 pp $decided_characters = $step1_characters[0..4]
 $current_step_index = 0
 $players_step_index = 0
-
 
 post("/new_deck") do
   session[:cookiepile1] = []
@@ -363,7 +359,6 @@ post("/next_card") do
   $players_step_index += 1
   $players_step_index %= 5
   
-
   session[:piles] = @piles
   pp session[:cookiepile1] ||= []
   pp session[:cookiepile2] ||= []
@@ -376,8 +371,7 @@ end
 
 
 
-@players = [@player1, @player2, @player3, @player4, @player5]
-
+# @players = [@player1, @player2, @player3, @player4, @player5]
 
 # post("/first_pile") do
 #   session[:cookiepile1] ||= []
