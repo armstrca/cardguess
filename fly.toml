@@ -17,4 +17,4 @@ primary_region = "ord"
   processes = ["app"]
 
 [env]
-  OPENAI_API_KEY = "$OPENAI_API_KEY"
+  OPENAI_API_KEY = "OPENAI_API_KEY"
