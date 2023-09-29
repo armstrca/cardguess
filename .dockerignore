@@ -29,8 +29,7 @@ public/assets
 # Ignore master key for decrypting credentials and more.
 config/master.key
 
-# Ignore dotenv files
-.env*
+
 
 **/.rbenv-gemsets
 **/examples.txt
@@ -44,5 +43,3 @@ config/master.key
 **/.theia/.ltici_apitoken.yml
 **/.vscode/.ltici_apitoken.yml
 fly.toml
-
-

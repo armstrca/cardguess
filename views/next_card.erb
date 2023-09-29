@@ -10,25 +10,25 @@
 
 <h1>
 <% if (session[:cookiepile1].length > 0) && (session[:cookiepile2].length == 0) && (session[:cookiepile3].length == 0) && (session[:cookiepile4].length == 0) %>
-  Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br><br><br><br>
+  Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %> <%= @guess_value = @match_data[1] if @match_data %> <br><br><br><br>
   <% end %>
 
 <% if (session[:cookiepile1].length > 0) && (session[:cookiepile2].length > 0) && (session[:cookiepile3].length == 0) && (session[:cookiepile4].length == 0) %>
   Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br>
-  Pile 2: <%= @pile2.empty? ? "No card" : @pile2.first %><br><br><br>
+  Pile 2: <%= @pile2.empty? ? "No card" : @pile2.first %> <%= @guess_value = @match_data[1] if @match_data %> <br><br><br>
   <% end %>
 
 <% if (session[:cookiepile1].length > 0) && (session[:cookiepile2].length > 0) && (session[:cookiepile3].length > 0) && (session[:cookiepile4].length == 0) %>
   Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br>
   Pile 2: <%= @pile2.empty? ? "No card" : @pile2.first %><br>
-  Pile 3: <%= @pile3.empty? ? "No card" : @pile3.first %><br><br>
+  Pile 3: <%= @pile3.empty? ? "No card" : @pile3.first %> <%= @guess_value = @match_data[1] if @match_data %> <br><br>
   <% end %>
 
 <% if (session[:cookiepile1].length > 0) && (session[:cookiepile2].length > 0) && (session[:cookiepile3].length > 0) && (session[:cookiepile4].length > 0) %>
   Pile 1: <%= @pile1.empty? ? "No card" : @pile1.first %><br>
   Pile 2: <%= @pile2.empty? ? "No card" : @pile2.first %><br>
   Pile 3: <%= @pile3.empty? ? "No card" : @pile3.first %><br>
-  Pile 4: <%= @pile4.empty? ? "No card" : @pile4.first %><br>
+  Pile 4: <%= @pile4.empty? ? "No card" : @pile4.first %> <%= @guess_value = @match_data[1] if @match_data %> <br>
   <% end %>
   
   <%= "Game over!" if ((@pile1.length == 1) && (@pile2.length == 1) && (@pile3.length == 1) && (@pile4.length == 1)) %>
@@ -54,19 +54,29 @@
 
   <% if chat["role"] == "assistant" && ($players_step_index == 1)%>
     <dt>Player 1:</dt>
-    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
-<% elsif chat["role"] == "assistant" && ($players_step_index == 2)%>
+    <dd><%= @guess_value %></dd>
+    <dd><%= @guess_reason %></dd>
+    <dd><%= @guess_response %></dd>
+  <% elsif chat["role"] == "assistant" && ($players_step_index == 2)%>
     <dt>Player 2:</dt>
-    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
-<% elsif chat["role"] == "assistant" && ($players_step_index == 3)%>
+    <dd><%= @guess_value %></dd>
+    <dd><%= @guess_reason %></dd>
+    <dd><%= @guess_response %></dd>
+  <% elsif chat["role"] == "assistant" && ($players_step_index == 3)%>
     <dt>Player 3:</dt>
-    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
-<% elsif chat["role"] == "assistant" && ($players_step_index == 4)%>
+    <dd><%= @guess_value %></dd>
+    <dd><%= @guess_reason %></dd>
+    <dd><%= @guess_response %></dd>
+  <% elsif chat["role"] == "assistant" && ($players_step_index == 4)%>
     <dt>Player 4:</dt>
-    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
-<% elsif chat["role"] == "assistant" && ($players_step_index == 0)%>
+    <dd><%= @guess_value %></dd>
+    <dd><%= @guess_reason %></dd>
+    <dd><%= @guess_response %></dd>
+  <% elsif chat["role"] == "assistant" && ($players_step_index == 0)%>
     <dt>Player 5:</dt>
-    <dd><%= chat["content"].gsub("\n", "<br>") %></dd>
+    <dd><%= @guess_value %></dd>
+    <dd><%= @guess_reason %></dd>
+    <dd><%= @guess_response %></dd>
     <% end %>
   <% end %>
 <% end %>

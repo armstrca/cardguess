@@ -9,6 +9,7 @@ require 'dotenv/load'
 require "sinatra/cookies"
 require "better_errors"
 require 'rack/session/cookie'
+require 'openai'
 enable :sessions
 
 use Rack::Session::Cookie, secret: '12345'
@@ -203,7 +204,7 @@ post("/next_card") do
 
     1. There is one dealer, and 5 players. You are not the dealer. DO NOT NARRATE THE GAME AS A DEALER. DO NOT SPEAK AS IF YOU ARE A GAME SHOW HOST. ONLY INTERACT WITH THE GAME AS A PLAYER WITH WHATEVER PERSONALITY IS ASSIGNED TO THAT PLAYER./n/n
 
-    2. The game is played with standard playing cards - an indeterminate amount greater than one deck (52 cards plus two jokers) but smaller than 4 total decks. This way card counting is not really possible. The list of all possible valid cards is represented by this array: #{$deck_array}./n/n
+    2. The game is played with standard playing cards - an indeterminate amount greater than one deck (52 cards plus two jokers) but smaller than 4 total decks. Card counting is impossible. The list of all possible valid cards is represented by this array: #{$deck_array}./n/n
 
     3. Players take turns guessing what the next card dealt will be, based on the personality traits that their names/titles/origins allude to. When the game is initiated, each player will maintain that player style/personality for the entirety of the game./n/n
 
@@ -217,14 +218,14 @@ post("/next_card") do
 
     8. Participants are expected to improvise and provide reasoning, serious/fatuous/silly/heartbreaking or otherwise, for why they are not 'guessing' but in fact are quite certain of what the next card will be./n/n
 
-    9. Each of the players may choose to take what other players have said and guessed into account. They may also take into account the contents of #{session[:cookiepile1]}, #{session[:cookiepile2]}, #{session[:cookiepile3]}, and #{session[:cookiepile4]} when making guesses and providing reasoning for them. But this is not mandatory./n/n
+    9. Each of the players may choose to take what other players have said and guessed into account. They may also take into account the contents of #{session[:cookiepile1]}, #{session[:cookiepile2]}, #{session[:cookiepile3]}, and #{session[:cookiepile4]} when making guesses and providing reasoning for them./n/n
 
     10. DO NOT DESCRIBE HOW THE GAME WORKS. DO NOT DESCRIBE ASSIGNING PERSONALITIES TO THE PLAYERS. THE PLAYER'S PERSONALITY SHOULD ONLY BE APPARENT THROUGH THEIR BEHAVIOR, NOT THROUGH EXPLICIT THIRD-PERSON OR SECOND-PERSON DESCRIPTIONS OF THEM. DO NOT LABEL THE PLAYER IN ANY WAY. DO NOT EVER TYPE OUT THE TEXT OF THEIR PERSONALITY. THEIR PERSONALITY AND IDENTITY SHOULD BE REVEALED IMPLICITLY RATHER THAN EXPLICITLY. NEVER PUT THEIR PERSONALITY TITLE IN ANY OF THE MESSAGES YOU SEND./n/n
 
-    11. ChatGPT format/structure all of its responses as follows in order for this program to properly interpret its input: /n
-    You must first send one separate message in the format of a hash: { Player #{$players_step_index + 1} => player#{$players_step_index + 1}_guess }, where 'Player' represents whichever of the 5 players is currently guessing, and 'player_guess' is a value taken from the '$deck_array' specified above in Rule 7./n
-    You must then send another separate message, again in the format of a hash: { Player #{$players_step_index + 1} => player#{$players_step_index + 1}_reasoning }, where 'Player' still represents whichever of the 5 players is currently guessing, and 'player_reasoning' is a string in which the player may choose to explain their guess or not, depending on their personality, and following the other rules and guidelines set out in these rules/instructions. Alter only the values of these hashes, not their keys./n
-    Once the player has submitted a guess and a card has been dealt, you must send a third message, again in the format of a hash: { Player #{$players_step_index + 1} => player#{$players_step_index + 1}_response }, where 'Player' still represents whichever of the 5 players just guessed, and 'player#{$players_step_index + 1}_response' is a narrative string in which the player character responds to the result. Alter only the values of these hashes, not their keys."
+    11. ChatGPT must format all of its responses as follows in order for the game program to properly interpret its input: /n
+    All players must first send one separate message in the format of a hash: player#{$players_step_index + 1}_guess, where 'Player' represents whichever of the 5 players is currently guessing, and 'player_guess' is a value taken from the '$deck_array' (#{$deck_array}) specified above in Rule 7. 'player#{$players_step_index + 1}_guess' must ONLY contain one value identical to a string in $deck_array./n
+    All players must then send another separate message, again in the format of a hash: { Player #{$players_step_index + 1} => player#{$players_step_index + 1}_reasoning }, where 'Player' still represents whichever of the 5 players is currently guessing, and 'player_reasoning' is a line of text in which the player must explain their guess, depending on their personality, and following the other rules and guidelines set out in these rules/instructions. Alter only the values of these hashes, not their keys./n
+    Once the player has submitted a guess and a card has been dealt, you must send a third message, again in the format of a hash: { Player #{$players_step_index + 1} => player#{$players_step_index + 1}_response }, where 'Player' still represents whichever of the 5 players just guessed, and 'player#{$players_step_index + 1}_response' is a narrative line of text in which the player character responds to the result. Alter only the values of these hashes, not their keys."
 
 
 #############################################################
@@ -251,11 +252,13 @@ post("/next_card") do
     request_messages = [
       {
         "role" => "system",
-        "content" => "Player 1 is #{$decided_characters[0]}. Player 2 is #{$decided_characters[1]}. Player 3 is #{$decided_characters[2]}. Player 4 is #{$decided_characters[3]}. Player 5 is #{$decided_characters[4]}."
+        "content" => $chatgpt_instructions
       },
       {
         "role" => "system",
-        "content" => "player_turn_conditional =/n def player_turn_conditional
+        "content" => "Player 1 is #{$decided_characters[0]}. Player 2 is #{$decided_characters[1]}. Player 3 is #{$decided_characters[2]}. Player 4 is #{$decided_characters[3]}. Player 5 is #{$decided_characters[4]}.
+        player_turn_conditional =/n 
+        def player_turn_conditional
         if $players_step_index == 0
           ""You are Player #{$players_step_index + 1}. Take your turn.""
         elsif $players_step_index == 1
@@ -268,63 +271,64 @@ post("/next_card") do
           ""You are Player #{$players_step_index + 1}. Take your turn.""
         end
       end
-      Here is player_turn_conditional: #{player_turn_conditional}"
+      Here is player_turn_conditional: #{player_turn_conditional}
+      
+      $state_of_play = [session[:cookiepile1], session[:cookiepile2], session[:cookiepile3], session[:cookiepile4], session[:current_step_index_cookie], cookies[:game_history], #{player_turn_conditional}. Here is $state_of_play: #{$state_of_play}
+      "
       },
       {
         "role" => "system",
-        "content" => "$state_of_play = [session[:cookiepile1], session[:cookiepile2], session[:cookiepile3], session[:cookiepile4], session[:current_step_index_cookie], cookies[:game_history], #{player_turn_conditional}. Here is $state_of_play: #{$state_of_play}"
+        "content" => "Respond to this message in this format: {Player #{$players_step_index + 1} => [player#{$players_step_index + 1}_guess]}  {Player #{$players_step_index + 1} => player#{$players_step_index + 1}_reasoning} {Player #{$players_step_index + 1} => player#{$players_step_index + 1}_response}"
       },
-      {
-        "role" => "system",
-        "content" => $chatgpt_instructions
-      },
-      {
-        "role" => "system",
-        "content" => "format_guess_prompt:/n#{format_guess_prompt}/n
-      format_response_prompt:/n#{format_response_prompt}"
-      },
-      {
-        "role" => "system",
-        "content" => "Respond to this message in this format: #{format_guess_prompt}"
-      },
-      {
-        "role" => "system",
-        "content" => "Respond to this message in this format: #{format_response_prompt}"
-      },
-      {
-        "role" => "user",
-        "content" => player_turn_conditional 
-      }
+
       ]
+  
+    params = {
+      model: "gpt-3.5-turbo-16k-0613",
+      messages: request_messages,
+      temperature: 0.01,
+      max_tokens: 1534,
+      top_p: 1,
+      frequency_penalty: 0.1,
+      presence_penalty: 0.4
+    }
+
+
+    request_body_hash = {
+      "model" => "gpt-3.5-turbo-16k-0613",
+      "messages" => request_messages
+    }
 
 
 
-      request_body_hash = {
-        "model" => "gpt-3.5-turbo-16k-0613",
-        "messages" => request_messages
-      }
+    request_body_json = JSON.generate(request_body_hash)
 
-      request_body_json = JSON.generate(request_body_hash)
+    raw_response = HTTP.headers(request_headers_hash).post(
+      "https://api.openai.com/v1/chat/completions",
+      :body => request_body_json
+    ).to_s
 
-      raw_response = HTTP.headers(request_headers_hash).post(
-        "https://api.openai.com/v1/chat/completions",
-        :body => request_body_json
-      ).to_s
+    pp @parsed_response = JSON.parse(raw_response)
 
-      pp @parsed_response = JSON.parse(raw_response)
+    @reply = @parsed_response.dig("choices", 0, "message", "content")
 
-      pp @reply = @parsed_response.dig("choices", 0, "message", "content")
+    pp match_data = @reply.match(/["'](\S+?)(?=["']\]})/)
+    pp @guess_value = @match_data[1] if @match_data
+    pp extracted_blocks = @reply.scan(/=>\s*["]([^"]+)["]/).flatten
+    pp "GUESS REASON #{@guess_reason = extracted_blocks[0]}"
+    pp "GUESS REASON: #{@guess_response = extracted_blocks[1]}"
+    pp "GUESS RESPONSE: #{@guess_response = extracted_blocks[2]}"
 
-      @game_history = []
-      request_messages.each do |message|
-        if message["role"] == "user" || message["role"] == "assistant"
-          @game_history << { "role" => message["role"], "content" => message["content"] }
-        end
+    @game_history = []
+    request_messages.each do |message|
+      if message["role"] == "user" || message["role"] == "assistant"
+        @game_history << { "role" => message["role"], "content" => message["content"] }
       end
+    end
 
-      pp @game_history << { "role" => "assistant", "content" => @reply }
+    @game_history << { "role" => "assistant", "content" => @reply }
 
-      cookies[:game_history] = JSON.generate(@game_history)
+    cookies[:game_history] = JSON.generate(@game_history)
 
 
 ###############################################################
