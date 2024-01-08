@@ -12,7 +12,7 @@ gem 'rack_session_access'
 
 
 # Use Puma as the app server
-gem "puma", "~> 5.0"
+gem "puma", "~> 5.6"
 
 # use active record
 gem "sinatra-activerecord"
